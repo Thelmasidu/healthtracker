@@ -1,5 +1,6 @@
 import models.User
 
+var user = User()
 
 //Users Input/Output example
 //fun main(){
