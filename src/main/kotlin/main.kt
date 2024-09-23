@@ -1,4 +1,5 @@
 import models.User
+import utils.ValidationUtility
 
 var user = User()
 
@@ -24,17 +25,71 @@ fun main(){
 //    listUser()
     runApp()
 //    NOTE: This variable already has the add and list user inside it's function, so there's no use calling out the add/lust user variable in the main function.
-
 }
 
-fun addUser(){
+//fun addUser(){
+//    println("Please enter the following for the user:")
+//    print("     Name: ")
+//    user.name = readln()
+//    print("     Email: ")
+//    user.email = readln()
+//    print("     Weight is ")
+//    user.weight = readln().toDouble()
+//    print("     Height is ")
+//    user.height = readln().toFloat()
+//    print("     Gender:")
+//    user.gender = readln()
+//
+//
+//    user.id = readlnOrNull()?.toIntOrNull() ?: -1
+//
+
+
+fun addUser() {
     println("Please enter the following for the user:")
+
     print("     Name: ")
     user.name = readln()
-    print("     Email: ")
-    user.email = readln()
+
+    do {
+        print("     Email: ")
+        user.email = readln()
+        if (!ValidationUtility.validateEmail(user.email)) {
+            println("Invalid email format. Please try again.")
+        }
+    } while (!ValidationUtility.validateEmail(user.email))
+
+    do {
+        print("     Weight: ")
+        user.weight = readln().toDouble()
+        if (!ValidationUtility.validateWeight(user.weight)) {
+            println("Invalid weight. Please enter a value between 0 and 300 kg.")
+        }
+    } while (!ValidationUtility.validateWeight(user.weight))
+
+    do {
+        print("     Height: ")
+        user.height = readln().toFloat()
+        if (!ValidationUtility.validateHeight(user.height)) {
+            println("Invalid height. Please enter a value between 0.5 and 2.5 meters.")
+        }
+    } while (!ValidationUtility.validateHeight(user.height))
+
+    do {
+        print("     Gender (M/F/O): ")
+        user.gender = readln()
+        if (!ValidationUtility.validateGender(user.gender)) {
+            println("Invalid gender. Please enter 'M', 'F', or 'O'.")
+        }
+    } while (!ValidationUtility.validateGender(user.gender))
+
     user.id = readlnOrNull()?.toIntOrNull() ?: -1
 }
+
+
+
+
+
 
 fun listUser(){
     println("The user details are: $user")
@@ -79,6 +134,7 @@ fun runApp(){
     } while (input != 0)
 }
 
+
 fun menu(): Int{
     print("""
         |Main Menu:
@@ -88,3 +144,6 @@ fun menu(): Int{
         |Please enter your option: """.trimMargin())
     return readlnOrNull()?.toIntOrNull() ?: -1
 }
+
+
+
