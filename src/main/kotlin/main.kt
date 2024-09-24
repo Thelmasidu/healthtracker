@@ -1,7 +1,9 @@
+import controllers.UserStore
 import models.User
 import utils.ValidationUtility
 
-var user = User()
+//var user = User()
+val userStore = UserStore()
 
 //Users Input/Output example
 //fun main(){
@@ -48,6 +50,8 @@ fun main(){
 fun addUser() {
     println("Please enter the following for the user:")
 
+    val user = User()
+
     print("     Name: ")
     user.name = readln()
 
@@ -83,7 +87,10 @@ fun addUser() {
         }
     } while (!ValidationUtility.validateGender(user.gender))
 
-    user.id = readlnOrNull()?.toIntOrNull() ?: -1
+
+//    user.id = readlnOrNull()?.toIntOrNull() ?: -1
+
+    userStore.create(user)
 }
 
 
@@ -91,8 +98,9 @@ fun addUser() {
 
 
 
-fun listUser(){
-    println("The user details are: $user")
+fun listUsers(){
+//    println("The user details are: $user")
+    println("The user details are: ${userStore.findAll()}")
 }
 
 //menu function
@@ -126,8 +134,10 @@ fun runApp(){
         input = menu()
         when(input) {
             1 -> addUser()
-            2 -> listUser()
-            in(3..6) -> println("Feature coming soon")
+            2 -> listUsers()
+            3 -> deleteUser()
+            4 -> searchById()
+            in(5..6) -> println("Feature coming soon")
             0 -> println("Bye...")
             else -> print("Invalid Option")
         }
@@ -139,11 +149,48 @@ fun menu(): Int{
     print("""
         |Main Menu:
         |  1. Add User
-        |  2. List User
+        |  2. List 
+        |  3. Delete
+        |  4. Search
         |  0. Exit
         |Please enter your option: """.trimMargin())
     return readlnOrNull()?.toIntOrNull() ?: -1
 }
 
+//THIS IS A HELPER FUNCTION
+fun getUserById() : User?{
+    print("Enter the id of the user: ")
+    return  userStore.findOne(readlnOrNull()?.toIntOrNull() ?: -1)
+}
 
+fun deleteUser(){
+    if (userStore.delete(getUserById()))
+        println ("User deleted")
+    else
+        println ("No user")
+}
 
+fun searchById() {
+    val user = getUserById()
+    if (user == null)
+        println ("No user found")
+    else
+        println(user)
+
+    val input = null
+    print("""
+        |Main Menu:
+        |  1. Add User
+        |  2. List Users
+        |  3. Search by Id
+        |  0. Exit
+""")
+
+         when(input) {
+            1 -> addUser()
+            2 -> listUsers()
+            3 -> searchById()
+            in(4..6) -> println("Feature coming soon")
+            0 -> println("Bye...")
+            else -> print("Invalid Option")
+        } }
