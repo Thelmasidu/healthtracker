@@ -8,3 +8,4 @@ data class User (
     var height:Float = 3.123f,
     var gender:String = ""
     )
+
