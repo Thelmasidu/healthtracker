@@ -4,7 +4,7 @@ import models.User
 
 class UserStore {
 
-    val users = ArrayList<User>()
+    private val users = ArrayList<User>()
 
     private var lastId = 0
     private fun getId() = lastId++

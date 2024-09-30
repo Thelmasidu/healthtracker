@@ -17,20 +17,22 @@ fun main(){
 }
 
 // Function to add a user
-fun addUser() {
+private fun addUser() {
     println("Please enter the following for the user:")
     userStore.create(getUserDetails())
 }
 
 // Function to list all users
-fun listUsers(){
+private fun listUsers(){
     println("The user details are:")
-    userStore.findAll().forEach{it -> println(it)}
+    userStore.findAll()
+        .sortedBy { it.name }
+        .forEach{println(it)}
 
 }
 
 // Menu function
-fun menu(): Int{
+private fun menu(): Int{
     print(
         """
         |Main Menu:
@@ -47,7 +49,7 @@ fun menu(): Int{
 }
 
 // Run the main application
-fun runApp() {
+private fun runApp() {
     var input: Int
     do {
         input = menu()
@@ -64,13 +66,13 @@ fun runApp() {
 }
 
 // Helper function to get a user by ID
-fun getUserById(): User? {
+private fun getUserById(): User? {
     print("Enter the id of the user: ")
     return userStore.findOne(readlnOrNull()?.toIntOrNull() ?: -1)
 }
 
 // Function to delete a user
-fun deleteUser() {
+private fun deleteUser() {
     val user = getUserById()
     if (user != null && userStore.delete(user.id))
         println("User deleted")
@@ -80,7 +82,7 @@ fun deleteUser() {
 
 
 // Function to search a user by ID
-fun searchById() {
+private fun searchById() {
     val user = getUserById()
     if (user == null)
         logger.info{"Search - no user found"}
@@ -89,7 +91,7 @@ fun searchById() {
 }
 
 // Function to update a user
-fun updateUser() {
+private fun updateUser() {
     val foundUser = getUserById()
     if (foundUser != null) {
         val updatedUser = getUserDetails()
@@ -104,7 +106,7 @@ fun updateUser() {
 }
 
 // Function to get user details
-fun getUserDetails(): User {
+private fun getUserDetails(): User {
     val user = User()
 
     print("     Name: ")
