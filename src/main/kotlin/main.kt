@@ -2,6 +2,8 @@ import controllers.UserStore
 import models.User
 import utils.ValidationUtility
 import io.github.oshai.kotlinlogging.KotlinLogging
+import utils.Conversion
+
 
 // Initialize UserStore
 val userStore = UserStore()
@@ -41,6 +43,9 @@ private fun menu(): Int{
         |  3. Delete User
         |  4. Search User by ID
         |  5. Update User
+        |  6. Search User by Gender
+        |  7. User Report
+        |  8. Users (imperial)
         |  0. Exit
         |Please enter your option: 
         """.trimMargin()
@@ -59,6 +64,9 @@ private fun runApp() {
             3 -> deleteUser()
             4 -> searchById()
             5 -> updateUser()
+            6 -> searchByGender()
+            7 -> userReport()
+            8 -> userImperial()
             0 -> println("Bye...")
             else -> println("Invalid Option")
         }
@@ -145,4 +153,85 @@ private fun getUserDetails(): User {
     } while (!ValidationUtility.validateGender(user.gender))
 
     return user
+}
+
+// Function to search users by gender
+private fun searchByGender() {
+    print("Enter gender to search (M/F/O): ")
+    val gender = readln()
+
+    // Validate gender input
+    if (!ValidationUtility.validateGender(gender)) {
+        println("Invalid gender. Please enter 'M', 'F', or 'O'.")
+        return
+    }
+
+    // Filter users by gender and sort by name
+    val usersByGender = userStore.findAll()
+        .filter { it.gender.equals(gender, ignoreCase = true) }
+        .sortedBy { it.name }
+
+    // Display the result
+    if (usersByGender.isNotEmpty()) {
+        println("Users with gender $gender:")
+        usersByGender.forEach { println(it) }
+    } else {
+        println("No users found with gender $gender.")
+    }
+}
+
+
+// Function to calculate BMI
+private fun calculateBMI(weight: Double, height: Float): Double {
+    return if (height > 0) {
+        weight / (height * height)
+    } else {
+        0.0
+    }
+}
+
+// Function to generate user report
+private fun userReport() {
+    println("-----------------------------------------------------")
+    println("User Report:")
+    println("-----------------------------------------------------")
+
+    userStore.findAll().forEach { user ->
+        // Lambda to format and print each user's report
+        val bmi = calculateBMI(user.weight, user.height)
+        println(
+            """
+            |Name: ${user.name}
+            |Email: ${user.email}
+            |Gender: ${user.gender}
+            |Height: ${"%.2f".format(user.height)} meters
+            |Weight: ${"%.2f".format(user.weight)} kg
+            |BMI: ${"%.2f".format(bmi)}
+            |-----------------------------------------------------
+            """.trimMargin()
+        )
+    }
+}
+
+private fun userImperial(){
+    println("Users (Imperial):")
+    println("-----------------------------------------------------")
+
+    userStore.findAll().forEach { user ->
+        // Convert height to inches and weight to pounds
+        val heightInInches = Conversion.convertMetresToInches(user.height.toDouble(), 2.0)
+        val weightInPounds = Conversion.convertKGtoPounds(user.weight, 2.0)
+
+        // Lambda to format and print each user's details
+        println(
+            """
+            |Name: ${user.name}
+            |Email: ${user.email}
+            |Gender: ${user.gender}
+            |Height: ${"%.2f".format(heightInInches)} inches
+            |Weight: ${"%.2f".format(weightInPounds)} pounds
+            |-----------------------------------------------------
+            """.trimMargin()
+        )
+    }
 }
