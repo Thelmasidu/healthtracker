@@ -1,55 +1,110 @@
 import controllers.UserStore
 import models.User
 import utils.ValidationUtility
+import io.github.oshai.kotlinlogging.KotlinLogging
 
-//var user = User()
+// Initialize UserStore
 val userStore = UserStore()
 
-//Users Input/Output example
-//fun main(){
-//    println("Welcome to Health Tracker")
-//    println("Please enter the following for the user:")
-//    print("    Name: ")
-//    user.name = readLine()!!
-//    print("    Email: ")
-//    user.email = readLine()!!
-//    print("    Id: ")
-//    user.id = readLine()?.toIntOrNull() ?: -1
-//
-//    print("The user details are: $user")
-//}
+private val logger = KotlinLogging.logger {}
 
-//Adding functions
+// Main function
 fun main(){
-    println("Welcome to Health tracker")
-//    This variable add users and also list the user in the function
-//    addUser()
-//    listUser()
+//    println("Welcome to Health tracker")
     runApp()
-//    NOTE: This variable already has the add and list user inside it's function, so there's no use calling out the add/lust user variable in the main function.
+    logger.info{"Health Tracker App has started"}
+
 }
 
-//fun addUser(){
-//    println("Please enter the following for the user:")
-//    print("     Name: ")
-//    user.name = readln()
-//    print("     Email: ")
-//    user.email = readln()
-//    print("     Weight is ")
-//    user.weight = readln().toDouble()
-//    print("     Height is ")
-//    user.height = readln().toFloat()
-//    print("     Gender:")
-//    user.gender = readln()
-//
-//
-//    user.id = readlnOrNull()?.toIntOrNull() ?: -1
-//
-
-
+// Function to add a user
 fun addUser() {
     println("Please enter the following for the user:")
+    userStore.create(getUserDetails())
+}
 
+// Function to list all users
+fun listUsers(){
+    println("The user details are:")
+    userStore.findAll().forEach{it -> println(it)}
+
+}
+
+// Menu function
+fun menu(): Int{
+    print(
+        """
+        |Main Menu:
+        |  1. Add User
+        |  2. List Users
+        |  3. Delete User
+        |  4. Search User by ID
+        |  5. Update User
+        |  0. Exit
+        |Please enter your option: 
+        """.trimMargin()
+    )
+    return readlnOrNull()?.toIntOrNull() ?: -1
+}
+
+// Run the main application
+fun runApp() {
+    var input: Int
+    do {
+        input = menu()
+        when(input) {
+            1 -> addUser()
+            2 -> listUsers()
+            3 -> deleteUser()
+            4 -> searchById()
+            5 -> updateUser()
+            0 -> println("Bye...")
+            else -> println("Invalid Option")
+        }
+    } while (input != 0)
+}
+
+// Helper function to get a user by ID
+fun getUserById(): User? {
+    print("Enter the id of the user: ")
+    return userStore.findOne(readlnOrNull()?.toIntOrNull() ?: -1)
+}
+
+// Function to delete a user
+fun deleteUser() {
+    val user = getUserById()
+    if (user != null && userStore.delete(user.id))
+        println("User deleted")
+    else
+        println("No user found")
+}
+
+
+// Function to search a user by ID
+fun searchById() {
+    val user = getUserById()
+    if (user == null)
+        logger.info{"Search - no user found"}
+    else
+        println(user)
+}
+
+// Function to update a user
+fun updateUser() {
+    val foundUser = getUserById()
+    if (foundUser != null) {
+        val updatedUser = getUserDetails()
+        updatedUser.id = foundUser.id
+        if (userStore.update(updatedUser))
+            println("User updated")
+        else
+            println("User not updated")
+    } else {
+        println("User not found")
+    }
+}
+
+// Function to get user details
+fun getUserDetails(): User {
     val user = User()
 
     print("     Name: ")
@@ -87,110 +142,5 @@ fun addUser() {
         }
     } while (!ValidationUtility.validateGender(user.gender))
 
-
-//    user.id = readlnOrNull()?.toIntOrNull() ?: -1
-
-    userStore.create(user)
+    return user
 }
-
-
-
-
-
-
-fun listUsers(){
-//    println("The user details are: $user")
-    println("The user details are: ${userStore.findAll()}")
-}
-
-//menu function
-/** fun menu(): Int{
-    println("\nMain Menu:")
-    println("1. Add User")
-    println("2. List User")
-    println("0. Exit")
-    print("Please enter your option: ")
-    return readlnOrNull()?.toIntOrNull() ?: -1
-} */
-
-//This is a starter code calling for the adduser and listuser
-//fun runApp(){
-//    var input: Int
-//    do {
-//        input = menu()
-//        when(input) {
-//            1 -> addUser()
-//            2 -> listUser()
-//        }
-//    } while (input != 0)
-//}
-
-/** This function  is to add more variables to the user. EG. we added 3-6 variables which will either show
-invalid or feature soon
-*/
-fun runApp(){
-    var input: Int
-    do {
-        input = menu()
-        when(input) {
-            1 -> addUser()
-            2 -> listUsers()
-            3 -> deleteUser()
-            4 -> searchById()
-            in(5..6) -> println("Feature coming soon")
-            0 -> println("Bye...")
-            else -> print("Invalid Option")
-        }
-    } while (input != 0)
-}
-
-
-fun menu(): Int{
-    print("""
-        |Main Menu:
-        |  1. Add User
-        |  2. List 
-        |  3. Delete
-        |  4. Search
-        |  0. Exit
-        |Please enter your option: """.trimMargin())
-    return readlnOrNull()?.toIntOrNull() ?: -1
-}
-
-//THIS IS A HELPER FUNCTION
-fun getUserById() : User?{
-    print("Enter the id of the user: ")
-    return  userStore.findOne(readlnOrNull()?.toIntOrNull() ?: -1)
-}
-
-fun deleteUser(){
-    if (userStore.delete(getUserById()))
-        println ("User deleted")
-    else
-        println ("No user")
-}
-
-fun searchById() {
-    val user = getUserById()
-    if (user == null)
-        println ("No user found")
-    else
-        println(user)
-
-    val input = null
-    print("""
-        |Main Menu:
-        |  1. Add User
-        |  2. List Users
-        |  3. Search by Id
-        |  0. Exit
-""")
-
-         when(input) {
-            1 -> addUser()
-            2 -> listUsers()
-            3 -> searchById()
-            in(4..6) -> println("Feature coming soon")
-            0 -> println("Bye...")
-            else -> print("Invalid Option")
-        } }
